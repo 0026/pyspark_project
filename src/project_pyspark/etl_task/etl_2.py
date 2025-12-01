@@ -1,5 +1,6 @@
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
+import logging
 
 def marketing_address_information(personal_and_sales_info:DataFrame, calls_per_area_info: DataFrame, save_path = "./marketing_address_info"):
     """
@@ -38,6 +39,7 @@ def marketing_address_information(personal_and_sales_info:DataFrame, calls_per_a
     :return: None. The final dataset is written to disk.
     :rtype: None
     """
+    logging.info("start - marketing_address_information")
     calls_per_area_info = (
         calls_per_area_info
         .select("id", "area")
@@ -73,3 +75,4 @@ def marketing_address_information(personal_and_sales_info:DataFrame, calls_per_a
         .mode("overwrite")
         .csv(save_path)
     )
+    logging.info("finish - marketing_address_information")

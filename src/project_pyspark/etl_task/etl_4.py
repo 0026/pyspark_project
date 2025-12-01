@@ -1,7 +1,7 @@
 from pyspark.sql import Window
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
-
+import logging
 
 def top_3(personal_and_sales_info:DataFrame, calls_per_area_info:DataFrame, save_path = "./top_3"):
     """
@@ -45,6 +45,7 @@ def top_3(personal_and_sales_info:DataFrame, calls_per_area_info:DataFrame, save
     :return: None. The resulting CSV file is written to disk.
     :rtype: None
     """
+    logging.info("start - top_3")
     personal_and_sales_info = (
         personal_and_sales_info
         .select(
@@ -86,3 +87,4 @@ def top_3(personal_and_sales_info:DataFrame, calls_per_area_info:DataFrame, save
         .mode("overwrite")
         .csv(save_path)
     )
+    logging.info("finish - top_3")

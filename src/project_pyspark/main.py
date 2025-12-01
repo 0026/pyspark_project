@@ -14,8 +14,12 @@ from data_info.calls_per_area import calls_per_area_info
 from data_info.personal_and_sales_info import personal_and_sales_info
 from data_info.sales import sales_info
 import argparse
+import logging
 
 def main():
+    logging.basicConfig(level=logging.INFO)
+    logging.info("start app")
+
     spark = (
         SparkSession
         .builder
@@ -40,6 +44,7 @@ def main():
         "calls_per_area_info" : calls_per_area_info
     }
 
+    logging.info("setting configuration")
     if args.common_path:
         for key in data_config.keys():
             data_config[key].path = args.common_path
@@ -67,18 +72,14 @@ def main():
     )) & fail_on_quality_issue:
         return
 
-    for key in data.keys():
-        print(key)
-        print(data[key].path)
-        data[key].dataframe.printSchema()
-
-
+    logging.info("start processing")
     it_data(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
     marketing_address_information(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
     department_breakdown(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
     top_3(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
     top_3_most_sold_products_per_department_in_the_netherlands(data["sales_info"].dataframe)
     best_salesperson(data["sales_info"].dataframe, data["personal_and_sales_info"].dataframe)
+    logging.info("processing ended")
 
 if __name__ == "__main__":
     main()

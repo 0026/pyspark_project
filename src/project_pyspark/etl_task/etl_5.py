@@ -1,5 +1,6 @@
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
+import logging
 
 def top_3_most_sold_products_per_department_in_the_netherlands(sales_info:DataFrame, save_path = "./top_3_most_sold_per_department_netherlands"):
     """
@@ -29,6 +30,7 @@ def top_3_most_sold_products_per_department_in_the_netherlands(sales_info:DataFr
     :return: None. The resulting CSV is written to disk.
     :rtype: None
     """
+    logging.info("start - top_3_most_sold_products_per_department_in_the_netherlands")
     (
         sales_info
         .filter(F.col("country")=="Netherlands")
@@ -42,3 +44,4 @@ def top_3_most_sold_products_per_department_in_the_netherlands(sales_info:DataFr
         .mode("overwrite")
         .csv(save_path)
     )
+    logging.info("finish - top_3_most_sold_products_per_department_in_the_netherlands")
