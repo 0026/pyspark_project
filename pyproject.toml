@@ -1,0 +1,30 @@
+[project]
+name = "project-pyspark"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { email = "tomaszch9@gmail.com" }
+]
+requires-python = "==3.10.19"
+dependencies = [
+    "argparse>=1.4.0",
+    "logging>=0.4.9.6",
+    "pyspark==3.5.0",
+]
+
+[project.scripts]
+project-pyspark = "project_pyspark:main"
+
+[build-system]
+requires = ["uv_build>=0.9.13,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "chispa>=0.11.1",
+    "pytest>=9.0.1",
+]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
