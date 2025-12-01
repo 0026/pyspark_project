@@ -14,7 +14,8 @@ calls_per_area_info = {
     "read_options":{
         "header":"true"
     },
-    'path' : "/mnt/d/projekt/project_pyspark/resources/dataset_one.csv",
+    'path' : "./resources/",
+    'expected_filename' :  "dataset_one.csv",
     'expected_number_of_rows' : 1000
 }
 

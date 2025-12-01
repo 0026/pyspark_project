@@ -1,6 +1,43 @@
 import pyspark.sql.functions as F
+from pyspark.sql import DataFrame
 
-def marketing_address_information(personal_and_sales_info, calls_per_area_info, save_path = "./marketing_address_info"):
+def marketing_address_information(personal_and_sales_info:DataFrame, calls_per_area_info: DataFrame, save_path = "./marketing_address_info"):
+    """
+    Extract postcode information for individuals who belong to the Marketing area
+    and save the results as a CSV file.
+
+    This function performs the following steps:
+
+    1. Filters ``calls_per_area_info`` to retain only rows where ``area == "Marketing"``.
+    2. Selects ``id`` and ``address`` from ``personal_and_sales_info``.
+    3. Joins Marketing-area records with personal information on ``id``.
+    4. Extracts a Dutch-style postcode from the ``address`` column using the pattern::
+
+           (\d{4}\s?[A-Za-z]{2})
+
+       This matches:
+       - 4 digits  
+       - Optional whitespace  
+       - 2 letters  
+
+    5. Saves the resulting dataset—which contains ``address`` and the extracted
+       ``post_code`` field—to the specified directory as a single CSV file with a header.
+
+    :param personal_and_sales_info: Dataset containing personal information including
+        the ``address`` column.
+    :type personal_and_sales_info: pyspark.sql.DataFrame
+
+    :param calls_per_area_info: Dataset containing area information (e.g., Marketing, IT),
+        must include ``id`` and ``area`` columns.
+    :type calls_per_area_info: pyspark.sql.DataFrame
+
+    :param save_path: Output directory to save the resulting CSV file.
+        Defaults to ``"./marketing_address_info"``.
+    :type save_path: str, optional
+
+    :return: None. The final dataset is written to disk.
+    :rtype: None
+    """
     calls_per_area_info = (
         calls_per_area_info
         .select("id", "area")

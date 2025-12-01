@@ -20,7 +20,7 @@ def temp_dir():
     Creates a temporary directory for a test and deletes it afterward.
     """
     dir_path = tempfile.mkdtemp()
-    yield dir_path
+    yield str(dir_path)
 
     if os.path.exists(dir_path):
         shutil.rmtree(dir_path)

@@ -14,7 +14,8 @@ personal_and_sales_info = {
     "read_options":{
         "header":"true"
     },
-    'path' : "/mnt/d/projekt/project_pyspark/resources/dataset_two.csv",
+    'path' : "./resources/",
+    'expected_filename' :  "dataset_two.csv",
     'expected_number_of_rows' : 1000
 }
 

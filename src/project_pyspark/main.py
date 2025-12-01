@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 
 from common.dataset import Dataset
+from common.helper import is_datasets_valid
 
 from etl_task.etl_1 import it_data
 from etl_task.etl_2 import marketing_address_information
@@ -14,78 +15,70 @@ from data_info.personal_and_sales_info import personal_and_sales_info
 from data_info.sales import sales_info
 import argparse
 
-spark = (
-    SparkSession
-    .builder
-    .appName("Python Spark tasks")
-    .getOrCreate()
-)
+def main():
+    spark = (
+        SparkSession
+        .builder
+        .appName("Python Spark tasks")
+        .getOrCreate()
+    )
 
-parser=argparse.ArgumentParser()
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--sales_info_path", help="path to sales_info data")
+    parser.add_argument("--personal_and_sales_info", help="path to personal_and_sales_info data")
+    parser.add_argument("--calls_per_area_info", help="path to calls_per_area_info data")
+    parser.add_argument("--additional_check", help="stop if additional check (y/n)")
+    parser.add_argument("--common_path", help="path for all files")
 
-parser.add_argument("--sales_info_path", help="path to sales_info data")
-parser.add_argument("--personal_and_sales_info", help="path to personal_and_sales_info data")
-parser.add_argument("--calls_per_area_info", help="path to calls_per_area_info data")
+    args=parser.parse_args()
 
-args=parser.parse_args()
+    fail_on_quality_issue = True if args.additional_check=="y" else False
 
-data_config = [sales_info, personal_and_sales_info, calls_per_area_info]
+    data_config = {
+        "sales_info": sales_info,
+        "personal_and_sales_info": personal_and_sales_info, 
+        "calls_per_area_info" : calls_per_area_info
+    }
 
-if args.sales_info_path:
-    sales_info["path"] = args.sales_info_path
-    data_config.append(sales_info)
-if args.personal_and_sales_info:
-    sales_info["path"] = args.personal_and_sales_info
-    data_config.append(personal_and_sales_info)
-if args.sales_info_path:
-    sales_info["path"] = args.calls_per_area_info
-    data_config.append(calls_per_area_info)
+    if args.common_path:
+        for key in data_config.keys():
+            data_config[key].path = args.common_path
 
-data = {} 
-for  i in data_config:
-    ds = Dataset( **i)
-    ds.read_data(spark)
-    data[ds.name] = ds
+    if args.sales_info_path:
+        data_config["sales_info"]["path"] = args.sales_info_path
+        data_config["sales_info"]["expected_filename"] = ''
 
-for key in data.keys():
-    print(key)
-    print(data[key].path)
-    data[key].dataframe.printSchema()
+    if args.personal_and_sales_info:
+        data_config["personal_and_sales_info"]["path"] = args.personal_and_sales_info
+        data_config["personal_and_sales_info"]["expected_filename"] = ''
 
+    if args.calls_per_area_info:
+        data_config["calls_per_area_info"]["path"] = args.sales_info_path
+        data_config["calls_per_area_info"]["expected_filename"] = ''
 
+    data = {} 
+    for i in data_config.values():
+        ds = Dataset(**i)
+        ds.read_data(spark)
+        data[ds.name] = ds
 
-# it_data(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
-# marketing_address_information(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
-#department_breakdown(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
-#top_3(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
-#top_3_most_sold_products_per_department_in_the_netherlands(data["sales_info"].dataframe)
-# best_salesperson(data["sales_info"].dataframe, data["personal_and_sales_info"].dataframe)
-print(3)
-# data_config = [sales_info, personal_and_sales_info, calls_per_area_info]
-# data = {} 
+    if (not is_datasets_valid(
+        data["sales_info"].dataframe , data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe 
+    )) & fail_on_quality_issue:
+        return
 
-# for i in data_config:
-#     ds = Dataset( **i)
-#     ds.read_data(spark)
-#     data[ds.name] = ds
-    
-# for key in data.keys():
-#     print(key)
-#     data[key] = 
-
-# data["sales_info"].dataframe.printSchema()
-# data["sales_info"].dataframe.show()
-# data["sales_info"].check_data_quality()
+    for key in data.keys():
+        print(key)
+        print(data[key].path)
+        data[key].dataframe.printSchema()
 
 
-# df = data["sales_info"].dataframe
+    it_data(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
+    marketing_address_information(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
+    department_breakdown(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
+    top_3(data["personal_and_sales_info"].dataframe, data["calls_per_area_info"].dataframe)
+    top_3_most_sold_products_per_department_in_the_netherlands(data["sales_info"].dataframe)
+    best_salesperson(data["sales_info"].dataframe, data["personal_and_sales_info"].dataframe)
 
-
-# df =  (
-#     spark.read.csv("/mnt/d/projekt/project_pyspark/resources/dataset_three.csv")
-# )
-
-# df.show()
-# df.printSchema()
-
-# my_fun()
+if __name__ == "__main__":
+    main()

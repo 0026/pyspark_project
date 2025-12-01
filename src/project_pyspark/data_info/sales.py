@@ -18,6 +18,7 @@ sales_info = {
     "read_options":{
         "header":"true"
     },
-    'path' : "/mnt/d/projekt/project_pyspark/resources/dataset_three.csv",
+    'path' : "./resources/",
+    'expected_filename' :  "dataset_three.csv",
     'expected_number_of_rows' : 10000
 }
