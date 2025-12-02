@@ -44,6 +44,11 @@ Run all tests with:
 uv run pytest tests
 ```
 
+Run single tests with:
+```bash
+uv run pytest tests/test_helper.py
+```
+
 ## 📝 Features
 - Modular ETL pipeline with PySpark
 - Logging integrated into main and ETL files

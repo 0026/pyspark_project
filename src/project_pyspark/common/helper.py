@@ -65,7 +65,6 @@ def is_datasets_valid(sales_info: DataFrame, personal_and_sales_info: DataFrame,
         logging.warning(f"The dataset dataset_one (calls_per_area_info) has incorrect values `calls_successful` > `calls_made`.")
     
     # 3 check
-
     df_parts = (
         personal_and_sales_info
         .withColumn("parts", F.split("address", ","))
