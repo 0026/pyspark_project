@@ -71,7 +71,6 @@ def test_it_data_output_df(spark: SparkSession, temp_dir:str):
         spark
         .read
         .option('header', 'true')
-        .option("mode", "overwirte")
         .option("inferSchema" , "true")
         .csv(temp_dir)    
     )
