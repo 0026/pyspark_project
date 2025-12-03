@@ -1,8 +1,9 @@
 from pyspark.sql import Window
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
-import logging
+from common.decorator import log_decorator
 
+@log_decorator("best_salesperson")
 def best_salesperson(sales_info: DataFrame, personal_and_sales_info, save_path = "./best_salesperson"):
     """
     Identify the best salesperson per country based on the total number of items sold
@@ -45,7 +46,6 @@ def best_salesperson(sales_info: DataFrame, personal_and_sales_info, save_path =
     :return: None. The resulting CSV file is written to disk.
     :rtype: None
     """
-    logging.info("start - best_salesperson")
     window =  Window.partitionBy("country").orderBy(F.desc("items_sold"))
     
     (
@@ -70,4 +70,4 @@ def best_salesperson(sales_info: DataFrame, personal_and_sales_info, save_path =
         .mode("overwrite")
         .csv(save_path)
     )
-    logging.info("finish - best_salesperson")
+

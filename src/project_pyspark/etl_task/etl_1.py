@@ -1,7 +1,8 @@
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
-import logging
+from common.decorator import log_decorator
 
+@log_decorator("it_data")
 def it_data(
         personal_and_sales_info:DataFrame,
         calls_per_area_info:DataFrame, 
@@ -43,7 +44,6 @@ def it_data(
     :return: None. The result is written to disk as CSV.
     :rtype: None
     """
-    logging.info("start - it_data")
     calls_per_area_info = (
         calls_per_area_info
         .select("id", "area", "calls_successful")
@@ -76,6 +76,5 @@ def it_data(
         .mode("overwrite")
         .csv(save_path)
     )
-    logging.info("finish - it_data")
 
     

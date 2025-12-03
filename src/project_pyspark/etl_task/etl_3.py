@@ -1,7 +1,8 @@
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
-import logging
+from common.decorator import log_decorator
 
+@log_decorator("department_breakdown")
 def department_breakdown(personal_and_sales_info:DataFrame, calls_per_area_info:DataFrame, save_path="./department_breakdown"):
     """
     Produce a department-level breakdown of sales and call performance, and
@@ -44,7 +45,6 @@ def department_breakdown(personal_and_sales_info:DataFrame, calls_per_area_info:
     :return: None. The function writes the aggregated dataset to disk.
     :rtype: None
     """
-    logging.info("start - department_breakdown")
     personal_and_sales_info = (
         personal_and_sales_info
         .select(
@@ -83,5 +83,4 @@ def department_breakdown(personal_and_sales_info:DataFrame, calls_per_area_info:
         .mode("overwrite")
         .csv(save_path)
     )
-    logging.info("finish - department_breakdown")
     
