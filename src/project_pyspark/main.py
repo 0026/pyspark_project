@@ -36,6 +36,10 @@ def main():
 
     args=parser.parse_args()
 
+    if (args.additional_check is None) | (args.common_path is None):
+        logging.info("Missing required parameters: 'additional_check' and/or 'common_path'")
+        return
+
     fail_on_quality_issue = True if args.additional_check=="y" else False
 
     data_config = {
@@ -45,9 +49,8 @@ def main():
     }
 
     logging.info("setting configuration")
-    if args.common_path:
-        for key in data_config.keys():
-            data_config[key].path = args.common_path
+    for key in data_config.keys():
+        data_config[key]["path"] = args.common_path
 
     if args.sales_info_path:
         data_config["sales_info"]["path"] = args.sales_info_path
@@ -80,6 +83,8 @@ def main():
     top_3_most_sold_products_per_department_in_the_netherlands(data["sales_info"].dataframe)
     best_salesperson(data["sales_info"].dataframe, data["personal_and_sales_info"].dataframe)
     logging.info("processing ended")
+
+    spark.stop()
 
 if __name__ == "__main__":
     main()
